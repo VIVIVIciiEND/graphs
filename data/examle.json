@@ -1,45 +1,14 @@
 {
   "nodes": [
-    {
-      "id": "start",
-      "name": "Начало",
-      "node_type": "action",
-      "description": "Игрок просыпается"
-    },
-    {
-      "id": "choice",
-      "name": "Выбор",
-      "node_type": "branch"
-    },
-    {
-      "id": "fight",
-      "name": "Бой",
-      "node_type": "action"
-    },
-    {
-      "id": "end",
-      "name": "Конец",
-      "node_type": "end"
-    }
+    {"id": "msk", "name": "Москва"},
+    {"id": "spb", "name": "Санкт-Петербург"},
+    {"id": "nng", "name": "Нижний Новгород"},
+    {"id": "kzn", "name": "Казань"}
   ],
   "edges": [
-    {
-      "from": "start",
-      "to": "choice"
-    },
-    {
-      "from": "choice",
-      "to": "fight",
-      "description": "Атаковать"
-    },
-    {
-      "from": "choice",
-      "to": "end",
-      "description": "Уйти"
-    },
-    {
-      "from": "fight",
-      "to": "end"
-    }
+    {"from": "msk", "to": "spb"},
+    {"from": "msk", "to": "nng"},
+    {"from": "msk", "to": "kzn"},
+    {"from": "spb", "to": "nng"}
   ]
 }
