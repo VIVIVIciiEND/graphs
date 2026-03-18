@@ -1,14 +1,67 @@
 {
   "nodes": [
-    {"id": "msk", "name": "Москва"},
-    {"id": "spb", "name": "Санкт-Петербург"},
-    {"id": "nng", "name": "Нижний Новгород"},
-    {"id": "kzn", "name": "Казань"}
+    {
+      "id": "start",
+      "name": "Начало процесса",
+      "node_type": "Действие"
+    },
+    {
+      "id": "check_payment",
+      "name": "Проверка оплаты",
+      "node_type": "Ветвление"
+    },
+    {
+      "id": "process_payment",
+      "name": "Обработка платежа",
+      "node_type": "Действие"
+    },
+    {
+      "id": "send_notification",
+      "name": "Отправка уведомления",
+      "node_type": "Действие"
+    },
+    {
+      "id": "payment_error",
+      "name": "Ошибка оплаты",
+      "node_type": "Действие"
+    },
+    {
+      "id": "end_success",
+      "name": "Успешное завершение",
+      "node_type": "Конец"
+    },
+    {
+      "id": "end_failure",
+      "name": "Завершение с ошибкой",
+      "node_type": "Конец"
+    }
   ],
   "edges": [
-    {"from": "msk", "to": "spb"},
-    {"from": "msk", "to": "nng"},
-    {"from": "msk", "to": "kzn"},
-    {"from": "spb", "to": "nng"}
+    {
+      "from": "start",
+      "to": "check_payment"
+    },
+    {
+      "from": "check_payment",
+      "to": "process_payment",
+      "condition": "оплата успешна"
+    },
+    {
+      "from": "check_payment",
+      "to": "payment_error",
+      "condition": "ошибка оплаты"
+    },
+    {
+      "from": "process_payment",
+      "to": "send_notification"
+    },
+    {
+      "from": "send_notification",
+      "to": "end_success"
+    },
+    {
+      "from": "payment_error",
+      "to": "end_failure"
+    }
   ]
 }

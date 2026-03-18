@@ -1,9 +1,13 @@
 mod graph;
 mod loarder;
-// mod node_coordinates;
+mod drawing;
+mod node;
+use eframe::egui_glow::painter;
 use loarder::json_loader::load_graph;
 use crate::graph::Graph;
 use eframe::egui;
+use crate::drawing::draw_graph;
+use crate::node::coordin::generate_circle;
 struct GraphConstructor {
     graph: Option<Graph>, 
     error_message: Option<String>,
@@ -47,7 +51,7 @@ impl eframe::App for GraphConstructor {
                         //открыть файл
                     }
                     if ui.button("Помощь").clicked() {
-                        ui.label("хз какой-то текст");
+                       // хз какой-то текст
                     }
                 });
             });
@@ -62,23 +66,21 @@ impl eframe::App for GraphConstructor {
                 egui::Frame::dark_canvas(&ctx.style())
                     .stroke(egui::Stroke::new(3.0, egui::Color32::RED))
                     .show(&mut columns[0], |ui| {
-                        ui.set_min_size(egui::vec2(400.0, 300.0));
+                        ui.set_min_size(egui::vec2(450.0, 350.0));
                         egui::Frame::dark_canvas(&ctx.style())
                             .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY))
                             .show(ui, |ui| {
                                 ui.set_min_size(egui::vec2(400.0, 300.0));
-                                if let Some(graph) = &self.graph {
+                                if let Some(graph) = &self.graph 
+                                {
+                                    let (response , painter) = ui.allocate_painter(ui.available_size(),  egui::Sense::hover(),);
 
-                                    ui.horizontal_wrapped(|ui| {
-                                        for edge in &graph.edges {
-                                            ui.label(format!("{} -> {}", edge.from, edge.to));
-                                            ui.add_space(2.0);
-                                        }
-                                    });
+                                    let positions = generate_circle(graph);
+                                    draw_graph(graph, &painter, &positions);
                                 } else {
                                     ui.label("Граф не загружен");
                                 }
-                            });
+                            }); 
                     });
                 columns[1].heading("Параметры анализа");
                 columns[1].add_space(5.0);
@@ -91,7 +93,7 @@ impl eframe::App for GraphConstructor {
                             ui.label("Начальный узел:");
                             ui.add(
                                 egui::TextEdit::singleline(&mut self.start_node)
-                                    .hint_text("Корзина"),
+                                    .hint_text(""),
                             );
                         });
                         ui.add_space(5.0);
@@ -100,7 +102,7 @@ impl eframe::App for GraphConstructor {
                             ui.label("Конечный узел:");
                             ui.add(
                                 egui::TextEdit::singleline(&mut self.end_node)
-                                    .hint_text("Заказ оформлен"),
+                                    .hint_text(""),
                             );
                         });
                         ui.add_space(5.0);
@@ -123,7 +125,7 @@ impl eframe::App for GraphConstructor {
                     .show(&mut columns[1], |ui| {
                         ui.set_min_height(200.0);
                         if self.show_results && !self.found_paths.is_empty() {
-                            ui.label(format!("✔ Найдено {} путей:", self.found_paths.len()));
+                            ui.label(format!("Найдено {} путей:", self.found_paths.len()));
                             ui.add_space(5.0);
                             egui::ScrollArea::vertical()
                                 .max_height(150.0)
@@ -157,7 +159,7 @@ impl eframe::App for GraphConstructor {
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(1200.0, 700.0)),
+        initial_window_size: Some(egui::vec2(1400.0, 700.0)),
         min_window_size: Some(egui::vec2(800.0, 500.0)),
         ..Default::default()
     };
