@@ -1,6 +1,6 @@
-use std::collections::{HashMap , HashSet};
-
-fn build_aw(graph: &Graph) -> HashMap<String, Vec<String>> {
+use std::collections::HashMap;
+use crate::graph::Graph; 
+pub fn build_aw(graph: &Graph) -> HashMap<String, Vec<String>> {
     let mut aw:HashMap<String, Vec<String>>  = HashMap::new();
     for edge in &graph.edges {
         if aw.contains_key(&edge.from) {
@@ -10,21 +10,25 @@ fn build_aw(graph: &Graph) -> HashMap<String, Vec<String>> {
         }
     }
     aw
-}
-pub fn dfs(
-    node: &String , 
-    graph: &HashMap<String , Vec<String>>,
-    visited: &mut HashSet<String>,
-    
+}// задача функции привести структуру gRAPH В нужный вид haspmAP тип a: [d , c ...] для удобного поиска путей
+pub fn build_dfs(
+    node: String , 
+    end_node: &String ,  
+    aw: &HashMap<String , Vec<String>> , 
+    visited: &mut Vec<String>,
+    list_scenario: &mut Vec<Vec<String>> , 
+    // start: &String , 
 ){
-    visited.insert(node.clone());
-    let n_option = graph.get(node);
-    if n_option.is_some(){
-        let n = n_option.unwrap();
-        for i in n {
-            if visited.insert(i.clone){
-                dfs(i , graph , visited)
+    visited.push(node.clone());
+    if node == *end_node{ 
+        list_scenario.push(visited.clone()); 
+    } 
+    else if let Some(n_option) = aw.get(&node){
+        for next in n_option{
+            if !visited.contains(next){// првоерка на цикл 
+                build_dfs(next.clone() , end_node , aw, visited , list_scenario); 
+            }
         }
     }
-}
+    visited.pop();
 }

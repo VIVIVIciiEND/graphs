@@ -2,18 +2,22 @@ mod graph;
 mod loarder;
 mod drawing;
 mod node;
-use eframe::egui_glow::painter;
+mod analysis ; 
+// use std::fmt::format;
+
+// use eframe::egui_glow::painter;
 use loarder::json_loader::load_graph;
 use crate::graph::Graph;
 use eframe::egui;
 use crate::drawing::draw_graph;
 use crate::node::coordin::generate_circle;
+use analysis::dfs::{build_aw, build_dfs}; 
 struct GraphConstructor {
     graph: Option<Graph>, 
     error_message: Option<String>,
     start_node: String, 
     end_node: String,  
-    found_paths: Vec<String>,
+    found_paths: Vec<Vec<String>>,
     show_results: bool,
 }
 impl GraphConstructor {
@@ -24,10 +28,7 @@ impl GraphConstructor {
                 error_message: None,
                 start_node: String::from(""),
                 end_node: String::from(""),
-                found_paths: vec![
-                    String::from(""),
-                    String::from(""),
-                ],
+                found_paths: Vec::new(),
                 show_results: true,
             },
             Err(e) => Self {
@@ -113,7 +114,24 @@ impl eframe::App for GraphConstructor {
                                 )
                             .clicked()
                         {
-                            self.show_results = true;
+                            if let Some(graph) = &self.graph{
+                                        let aw1 = build_aw(graph); 
+                                        let mut visidet = Vec::new() ; 
+                                        let mut list_scenario = Vec::new(); 
+                                        build_dfs(
+                                            self.start_node.clone() , 
+                                            &self.end_node , 
+                                            &aw1 , 
+                                            &mut visidet , 
+                                            &mut list_scenario
+                                        );
+                                        self.found_paths = list_scenario ; 
+                                        self.show_results = true ; 
+                                    }else {
+                                        self.show_results=true ; 
+                                        self.found_paths = Vec::new() ; 
+
+                                    }
                         }
                     });
                 columns[1].add_space(10.0);
@@ -130,10 +148,7 @@ impl eframe::App for GraphConstructor {
                                 .max_height(150.0)
                                 .show(ui, |ui| {
                                     for (i, path) in self.found_paths.iter().enumerate() {
-                                        ui.horizontal(|ui| {
-                                            ui.label(format!("Путь {}:", i + 1));
-                                            ui.label(path);
-                                        });
+                                        ui.label(format!("Путь {}: {:?}", i + 1 , path));
                                     }
                                 });
                             if ui
