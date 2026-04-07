@@ -44,18 +44,18 @@ impl GraphConstructor {
 
 impl eframe::App for GraphConstructor {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("menu").show(ctx, |ui| {
-            egui::menu::bar(ui, |ui| {
-                ui.menu_button("☰", |ui| {
-                    if ui.button("Открыть").clicked() {
-                        //открыть файл
-                    }
-                    if ui.button("Помощь").clicked() {
-                       // хз какой-то текст
-                    }
-                });
-            });
-        });
+        // egui::TopBottomPanel::top("menu").show(ctx, |ui| {
+        // egui::menu::bar(ui, |ui| {
+        //         ui.menu_button("☰", |ui| {
+        //             if ui.button("Открыть").clicked() {
+        //                 //открыть файл
+        //             }
+        //             if ui.button("Помощь").clicked() {
+        //                // хз какой-то текст
+        //             }
+        //         });
+        //     })    ;
+        // });
         egui::CentralPanel::default().show(ctx, |ui| {
             if let Some(error) = &self.error_message {
                 ui.colored_label(egui::Color32::RED, error);
@@ -68,13 +68,12 @@ impl eframe::App for GraphConstructor {
                     .show(&mut columns[0], |ui| {
                         ui.set_min_size(egui::vec2(450.0, 350.0));
                         egui::Frame::dark_canvas(&ctx.style())
-                            .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY))
+                            .stroke(egui::Stroke::new(1.0, egui::Color32::WHITE))
                             .show(ui, |ui| {
                                 ui.set_min_size(egui::vec2(400.0, 300.0));
                                 if let Some(graph) = &self.graph 
                                 {
                                     let (response , painter) = ui.allocate_painter(ui.available_size(),  egui::Sense::hover(),);
-
                                     let positions = generate_circle(graph);
                                     draw_graph(graph, &painter, &positions);
                                 } else {
