@@ -17,13 +17,7 @@ pub fn build_dfs(
     aw: &HashMap<String , Vec<String>> , 
     visited: &mut Vec<String>,
     list_scenario: &mut Vec<Vec<String>> , 
-    // depth: usize , 
-    // maxd : usize,
-    // // start: &String , 
 ){
-    // if depth > maxd{
-    //     return; 
-    // }
     visited.push(node.clone());
     if node == *end_node{ 
         list_scenario.push(visited.clone()); 

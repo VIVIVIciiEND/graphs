@@ -4,16 +4,10 @@ mod drawing;
 mod node;
 mod analysis ; 
 mod export;
-// use std::fmt::format;
-
 use std::fs;
-
-// use eframe::egui_glow::painter;
 use loarder::json_loader::load_graph;
 use crate::graph::Graph;
 use eframe::egui;
-// use crate::drawing::draw_graph;
-// use crate::node::coordin::generate_circle;
 use analysis::dfs::{build_aw, build_dfs}; 
 use crate::graph::Node;
 use crate::export::mermaid::export_mer;
@@ -34,6 +28,7 @@ struct GraphConstructor {
     // depth: String , 
     found_paths: Vec<Vec<String>>,
     show_results: bool,
+    export_fail: bool,
 }
 impl GraphConstructor {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
@@ -46,6 +41,7 @@ impl GraphConstructor {
                 // depth: String::from(""),
                 found_paths: Vec::new(),
                 show_results: true,
+                export_fail: false , 
             },
             Err(e) => Self {
                 graph: None,
@@ -55,6 +51,7 @@ impl GraphConstructor {
                 // depth: String::from(""), 
                 found_paths: Vec::new(),
                 show_results: false,
+                export_fail: false ,  
             }
         }
     }
@@ -62,11 +59,11 @@ impl GraphConstructor {
 
 impl eframe::App for GraphConstructor {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("menu").show(ctx, |ui| {
-        egui::menu::bar(ui, |ui| {
-                ui.button("Загрузить файл Json").clicked()
-            })    ;
-        });
+        // egui::TopBottomPanel::top("menu").show(ctx, |ui| {
+        // // egui::menu::bar(ui, |ui| {
+        // //         ui.button("Загрузить файл Json").clicked()
+        // //     })    ;
+        // // });
         egui::CentralPanel::default().show(ctx, |ui| {
             if let Some(error) = &self.error_message {
                 ui.colored_label(egui::Color32::RED, error);
@@ -74,26 +71,6 @@ impl eframe::App for GraphConstructor {
             ui.columns(2, |columns| {
                 columns[0].heading("Параметры анализа");
                 columns[0].add_space(5.0);
-                // egui::Frame::dark_canvas(&ctx.style())
-                //     .stroke(egui::Stroke::new(3.0, egui::Color32::RED))
-                //     .show(&mut columns[0], |ui| {
-                //         ui.set_min_size(egui::vec2(450.0, 350.0));
-                //         egui::Frame::dark_canvas(&ctx.style())
-                //             .stroke(egui::Stroke::new(1.0, egui::Color32::WHITE))
-                //             .show(ui, |ui| {
-                //                 ui.set_min_size(egui::vec2(400.0, 300.0));
-                //                 if let Some(graph) = &self.graph 
-                //                 {
-                //                     let (response , painter) = ui.allocate_painter(ui.available_size(),  egui::Sense::hover(),);
-                //                     let positions = generate_circle(graph);
-                //                     draw_graph(graph, &painter, &positions);
-                //                 } else {
-                //                     ui.label("Граф не загружен");
-                //                 }
-                //             }); 
-                //     });
-                // columns[1].heading("Параметры анализа");
-                // columns[1].add_space(5.0);
                 egui::Frame::group(&ctx.style())
                     .fill(egui::Color32::from_rgb(40, 40, 40))
                     .show(&mut columns[0], |ui| {
@@ -153,13 +130,17 @@ impl eframe::App for GraphConstructor {
                         }
                         if ui
                             .add(
-                                egui::Button::new("Экспорт и открыть граф")
+                                egui::Button::new("Экспорт файл mmd")
                                 .min_size(egui::vec2(ui.available_width(), 30.0))
                             )
                             .clicked()
                             {
                                 let mermaid = export_mer(&self.found_paths); 
                                 fs::write("graph.mmd", mermaid).expect("ошибка записи");
+                                self.export_fail = true ; 
+                            }
+                            if self.export_fail { 
+                                ui.colored_label(egui::Color32::RED, "Файл загружен!");
                             }
                     });
                 // columns[1].add_space(10.0);
@@ -183,24 +164,12 @@ impl eframe::App for GraphConstructor {
                                                 path_names.push(name);
                                             }
                                             ui.label(format!("Путь {}: {}", i + 1 , path_names.join(" -> ")));
+                                            
                                         }
-                                        
-
                                     }
                                 });
-                            // if ui
-                            // .add(
-                            //     egui::Button::new("экспорт")
-                            //     .min_size(egui::vec2(ui.available_width(), 25.0))
-                            // )
-                            // .clicked()
-                            // {
-                            //     //экспорт файла либо dot. либо mermaid
-                            // }
                         } else if self.show_results {
                             ui.label("Пути не найдены");
-                        } else {
-                            ui.label("Введите параметры и нажмите 'Найти пути'");
                         }
                     });
                     
