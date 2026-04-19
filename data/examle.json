@@ -6,62 +6,203 @@
       "node_type": "Действие"
     },
     {
-      "id": "check_payment",
-      "name": "Проверка оплаты",
+      "id": "auth",
+      "name": "Проверка авторизации",
       "node_type": "Ветвление"
     },
     {
-      "id": "process_payment",
+      "id": "login_form",
+      "name": "Форма входа",
+      "node_type": "Действие"
+    },
+    {
+      "id": "main_menu",
+      "name": "Главное меню",
+      "node_type": "Действие"
+    },
+    {
+      "id": "select_product",
+      "name": "Выбор товара",
+      "node_type": "Действие"
+    },
+    {
+      "id": "add_to_cart",
+      "name": "Добавление в корзину",
+      "node_type": "Действие"
+    },
+    {
+      "id": "check_cart",
+      "name": "Просмотр корзины",
+      "node_type": "Ветвление"
+    },
+    {
+      "id": "continue_shopping",
+      "name": "Продолжить покупки",
+      "node_type": "Действие"
+    },
+    {
+      "id": "checkout",
+      "name": "Оформление заказа",
+      "node_type": "Действие"
+    },
+    {
+      "id": "payment_method",
+      "name": "Выбор способа оплаты",
+      "node_type": "Ветвление"
+    },
+    {
+      "id": "card_payment",
+      "name": "Оплата картой",
+      "node_type": "Действие"
+    },
+    {
+      "id": "cash_payment",
+      "name": "Оплата наличными",
+      "node_type": "Действие"
+    },
+    {
+      "id": "payment_processing",
       "name": "Обработка платежа",
       "node_type": "Действие"
     },
     {
-      "id": "send_notification",
-      "name": "Отправка уведомления",
+      "id": "payment_result",
+      "name": "Результат оплаты",
+      "node_type": "Ветвление"
+    },
+    {
+      "id": "order_confirmation",
+      "name": "Подтверждение заказа",
       "node_type": "Действие"
     },
     {
-      "id": "payment_error",
-      "name": "Ошибка оплаты",
+      "id": "send_email",
+      "name": "Отправка email",
       "node_type": "Действие"
     },
     {
       "id": "end_success",
-      "name": "Успешное завершение",
+      "name": "Заказ выполнен",
       "node_type": "Конец"
     },
     {
+      "id": "payment_failed",
+      "name": "Ошибка оплаты",
+      "node_type": "Действие"
+    },
+    {
+      "id": "try_again",
+      "name": "Повторить оплату",
+      "node_type": "Ветвление"
+    },
+    {
       "id": "end_failure",
-      "name": "Завершение с ошибкой",
+      "name": "Заказ отменен",
       "node_type": "Конец"
     }
   ],
   "edges": [
     {
       "from": "start",
-      "to": "check_payment"
+      "to": "auth"
     },
     {
-      "from": "check_payment",
-      "to": "process_payment",
-      "condition": "оплата успешна"
+      "from": "auth",
+      "to": "main_menu",
+      "condition": "авторизован"
     },
     {
-      "from": "check_payment",
-      "to": "payment_error",
-      "condition": "ошибка оплаты"
+      "from": "auth",
+      "to": "login_form",
+      "condition": "не авторизован"
     },
     {
-      "from": "process_payment",
-      "to": "send_notification"
+      "from": "login_form",
+      "to": "main_menu"
     },
     {
-      "from": "send_notification",
+      "from": "main_menu",
+      "to": "select_product"
+    },
+    {
+      "from": "select_product",
+      "to": "add_to_cart"
+    },
+    {
+      "from": "add_to_cart",
+      "to": "check_cart"
+    },
+    {
+      "from": "check_cart",
+      "to": "continue_shopping",
+      "condition": "продолжить"
+    },
+    {
+      "from": "check_cart",
+      "to": "checkout",
+      "condition": "оформить"
+    },
+    {
+      "from": "continue_shopping",
+      "to": "select_product"
+    },
+    {
+      "from": "checkout",
+      "to": "payment_method"
+    },
+    {
+      "from": "payment_method",
+      "to": "card_payment",
+      "condition": "карта"
+    },
+    {
+      "from": "payment_method",
+      "to": "cash_payment",
+      "condition": "наличные"
+    },
+    {
+      "from": "card_payment",
+      "to": "payment_processing"
+    },
+    {
+      "from": "cash_payment",
+      "to": "payment_processing"
+    },
+    {
+      "from": "payment_processing",
+      "to": "payment_result"
+    },
+    {
+      "from": "payment_result",
+      "to": "order_confirmation",
+      "condition": "успешно"
+    },
+    {
+      "from": "payment_result",
+      "to": "payment_failed",
+      "condition": "неуспешно"
+    },
+    {
+      "from": "order_confirmation",
+      "to": "send_email"
+    },
+    {
+      "from": "send_email",
       "to": "end_success"
     },
     {
-      "from": "payment_error",
-      "to": "end_failure"
+      "from": "payment_failed",
+      "to": "try_again"
+    },
+    {
+      "from": "try_again",
+      "to": "payment_method",
+      "condition": "повторить"
+    },
+    {
+      "from": "try_again",
+      "to": "end_failure",
+      "condition": "отмена"
     }
   ]
 }

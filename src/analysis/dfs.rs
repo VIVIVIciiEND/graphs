@@ -17,8 +17,13 @@ pub fn build_dfs(
     aw: &HashMap<String , Vec<String>> , 
     visited: &mut Vec<String>,
     list_scenario: &mut Vec<Vec<String>> , 
-    // start: &String , 
+    // depth: usize , 
+    // maxd : usize,
+    // // start: &String , 
 ){
+    // if depth > maxd{
+    //     return; 
+    // }
     visited.push(node.clone());
     if node == *end_node{ 
         list_scenario.push(visited.clone()); 
@@ -26,7 +31,7 @@ pub fn build_dfs(
     else if let Some(n_option) = aw.get(&node){
         for next in n_option{
             if !visited.contains(next){// првоерка на цикл 
-                build_dfs(next.clone() , end_node , aw, visited , list_scenario); 
+                build_dfs(next.clone() , end_node , aw, visited , list_scenario , ); 
             }
         }
     }
