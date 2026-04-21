@@ -4,13 +4,15 @@ mod drawing;
 mod node;
 mod analysis ; 
 mod export;
-use std::fs;
+use std::{fmt::format, fs};
 use loarder::json_loader::load_graph;
 use crate::graph::Graph;
 use eframe::egui;
 use analysis::dfs::{build_aw, build_dfs}; 
 use crate::graph::Node;
 use crate::export::mermaid::export_mer;
+use rfd::{AsyncFileDialog, FileDialog};
+
 
 fn Name_node(nodes: &Vec<Node> , id: &str) -> String {
     for node in nodes {
@@ -32,38 +34,37 @@ struct GraphConstructor {
 }
 impl GraphConstructor {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        match load_graph("data/examle.json") {
-            Ok(graph) => Self {
-                graph: Some(graph),
-                error_message: None,
-                start_node: String::from(""),
-                end_node: String::from(""),
-                // depth: String::from(""),
-                found_paths: Vec::new(),
-                show_results: true,
-                export_fail: false , 
-            },
-            Err(e) => Self {
-                graph: None,
-                error_message: Some(format!("Ошибка загрузки: {}", e)),
-                start_node: String::new(),
-                end_node: String::new(), 
-                // depth: String::from(""), 
-                found_paths: Vec::new(),
-                show_results: false,
-                export_fail: false ,  
-            }
+        Self {
+            graph: None,
+            error_message: None , 
+            start_node: String::new(),
+            end_node: String::new(), 
+            found_paths: Vec::new(),
+            show_results: false,
+            export_fail: false ,  
         }
     }
 }
-
 impl eframe::App for GraphConstructor {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // egui::TopBottomPanel::top("menu").show(ctx, |ui| {
-        // // egui::menu::bar(ui, |ui| {
-        // //         ui.button("Загрузить файл Json").clicked()
-        // //     })    ;
-        // // });
+        egui::TopBottomPanel::top("menu").show(ctx, |ui| {
+            egui::menu::bar(ui, |ui| {
+                if ui.button("Загрузить файл .json").clicked(){
+                    if let Some(path) = FileDialog::new().add_filter("json", &["json"]).pick_file(){
+                        match load_graph(path.to_str().unwrap()) {
+                            Ok(graph) => {
+                                self.graph = Some(graph) ; 
+                                self.error_message = None ; 
+                            }
+                            Err(e) => {
+                                self.graph = None ; 
+                                self.error_message = Some(format!("Ошибка загрузки {}" , e ))
+                            }
+                        }
+                    }
+                }
+            });
+        });
         egui::CentralPanel::default().show(ctx, |ui| {
             if let Some(error) = &self.error_message {
                 ui.colored_label(egui::Color32::RED, error);
@@ -75,7 +76,6 @@ impl eframe::App for GraphConstructor {
                     .fill(egui::Color32::from_rgb(40, 40, 40))
                     .show(&mut columns[0], |ui| {
                         ui.set_min_height(200.0);
-                        //Начальный узел
                         ui.horizontal(|ui| {
                             ui.label("Начальный узел:");
                             ui.add(
@@ -84,7 +84,6 @@ impl eframe::App for GraphConstructor {
                             );
                         });
                         ui.add_space(5.0);
-                        //Конечный узел
                         ui.horizontal(|ui| {
                             ui.label("Конечный узел:");
                             ui.add(
@@ -93,40 +92,30 @@ impl eframe::App for GraphConstructor {
                             );
                         });
                         ui.add_space(5.0);
-                        // ui.horizontal(|ui| {
-                        //     ui.label("Глубина анализа:");
-                        //     ui.text_edit_singleline(&mut self.depth);
-                        // });
-                        // ui.add_space(5.0);
-                        //Кнопка запуска поиска путей
                         if ui
                             .add(
                                 egui::Button::new("Найти пути")
                                 .min_size(egui::vec2(ui.available_width(), 30.0))
-                                )
+                            )
                             .clicked()
                         {
                             if let Some(graph) = &self.graph{
-                                        let aw1 = build_aw(graph); 
-                                        let mut visidet = Vec::new() ; 
-                                        let mut list_scenario = Vec::new(); 
-                                        // let max_depth = self.depth.parse::<usize>().unwrap_or(50);
-                                        build_dfs(
-                                            self.start_node.clone() , 
-                                            &self.end_node , 
-                                            &aw1 , 
-                                            &mut visidet , 
-                                            &mut list_scenario, 
-                                            // 0 , 
-                                            // max_depth , 
-                                        );
-                                        self.found_paths = list_scenario ; 
-                                        self.show_results = true ; 
-                                    }else {
-                                        self.show_results=true ; 
-                                        self.found_paths = Vec::new() ; 
-
-                                    }
+                                let aw1 = build_aw(graph); 
+                                let mut visidet = Vec::new() ; 
+                                let mut list_scenario = Vec::new(); 
+                                build_dfs(
+                                    self.start_node.clone() , 
+                                    &self.end_node , 
+                                    &aw1 , 
+                                    &mut visidet , 
+                                    &mut list_scenario, 
+                                );
+                                self.found_paths = list_scenario ; 
+                                self.show_results = true ; 
+                            } else {
+                                self.show_results = true ; 
+                                self.found_paths = Vec::new() ; 
+                            }
                         }
                         if ui
                             .add(
@@ -134,45 +123,42 @@ impl eframe::App for GraphConstructor {
                                 .min_size(egui::vec2(ui.available_width(), 30.0))
                             )
                             .clicked()
-                            {
-                                let mermaid = export_mer(&self.found_paths); 
-                                fs::write("graph.mmd", mermaid).expect("ошибка записи");
-                                self.export_fail = true ; 
-                            }
-                            if self.export_fail { 
-                                ui.colored_label(egui::Color32::RED, "Файл загружен!");
-                            }
+                        {
+                            let mermaid = export_mer(&self.found_paths); 
+                            fs::write("graph.mmd", mermaid).expect("ошибка записи");
+                            self.export_fail = true ; 
+                        }
+                        if self.export_fail { 
+                            ui.colored_label(egui::Color32::RED, "Файл загружен!");
+                        }
                     });
-                // columns[1].add_space(10.0);
                 columns[1].heading("РЕЗУЛЬТАТЫ");
                 columns[1].add_space(5.0);
                 egui::Frame::group(&ctx.style())
-                    .fill(egui::Color32::from_rgb(30, 30, 30))
-                    .show(&mut columns[1], |ui| {
-                        ui.set_min_height(200.0);
-                        if self.show_results && !self.found_paths.is_empty() {
-                            ui.label(format!("Найдено {} путей:", self.found_paths.len()));
-                            ui.add_space(5.0);
-                            egui::ScrollArea::vertical()
-                                .max_height(150.0)
-                                .show(ui, |ui| {
-                                    for (i, path) in self.found_paths.iter().enumerate() {
-                                        if let Some(graph) =&self.graph{
-                                            let mut path_names = Vec::new() ; 
-                                            for node_id in path{
-                                                let name = Name_node(&graph.nodes , node_id);
-                                                path_names.push(name);
-                                            }
-                                            ui.label(format!("Путь {}: {}", i + 1 , path_names.join(" -> ")));
-                                            
-                                        }
+                .fill(egui::Color32::from_rgb(30, 30, 30))
+                .show(&mut columns[1], |ui| {
+                    ui.set_min_height(ui.available_height());
+                    if self.show_results && !self.found_paths.is_empty() {
+                        ui.label(format!("Найдено {} путей:", self.found_paths.len()));
+                        ui.add_space(5.0);
+                        egui::ScrollArea::vertical()
+                        .show(ui, |ui| {
+                            for (i, path) in self.found_paths.iter().enumerate() {
+                                if let Some(graph) =&self.graph{
+                                    let mut path_names = Vec::new();
+                                    for node_id in path{
+                                        let name = Name_node(&graph.nodes , node_id);
+                                        path_names.push(name);
                                     }
-                                });
-                        } else if self.show_results {
-                            ui.label("Пути не найдены");
+                                    ui.label(format!("Путь {}: {}",i + 1,path_names.join(" -> ")
+                            ));
                         }
-                    });
-                    
+                    }
+                });
+        } else if self.show_results {
+            ui.label("Пути не найдены");
+        }
+    });
             });
         });
     }
