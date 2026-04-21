@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru-Ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Граф</title>
+    <style>
+    *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', 'Segoe UI', monospace;
+        background: #0a0e27;
+        min-height: 100vh;
+        padding: 30px;
+    }
+    
+    .container {
+        max-width: 1300px;
+        margin: 0 auto;
+        background: linear-gradient(145deg, #131b3c 0%, #0d122b 100%);
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.05);
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        overflow: hidden;
+    }
+    
+    .header {
+        background: rgba(255,255,255,0.03);
+        padding: 24px 30px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+    }
+    .header h1 {
+        color: #a855f7;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .header h1::before {
+        content: "✨";
+        font-size: 30px;
+    }
+    .header p {
+        color: #94a3b8;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+    
+    .graph-container {
+        padding: 30px;
+        background: rgba(0,0,0,0.2);
+    }
+    .mermaid {
+        background: rgba(15, 23, 42, 0.8);
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid rgba(168, 85, 247, 0.2);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        text-align: center;
+    }
+    
+    /* Кастомизация Mermaid в тёмной теме */
+    .mermaid .label {
+        color: #e2e8f0 !important;
+        fill: #e2e8f0 !important;
+    }
+    
+    .mermaid .node rect,
+    .mermaid .node circle,
+    .mermaid .node polygon {
+        stroke: #a855f7 !important;
+        stroke-width: 2px !important;
+    }
+    
+    .footer {
+        padding: 15px 30px;
+        background: rgba(0,0,0,0.3);
+        color: #64748b;
+        font-size: 12px;
+        text-align: center;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Визуализация графа</h1>
+            <p>Интерактивная схема связей между узлами</p>
+        </div>
+        <div class="graph-container">
+            <pre class="mermaid">
+graph TD;
+start --> auth;
+auth --> main_menu;
+main_menu --> select_product;
+select_product --> add_to_cart;
+add_to_cart --> check_cart;
+check_cart --> checkout;
+checkout --> payment_method;
+payment_method --> card_payment;
+card_payment --> payment_processing;
+payment_processing --> payment_result;
+payment_result --> order_confirmation;
+order_confirmation --> send_email;
+send_email --> end_success;
+start --> auth;
+auth --> main_menu;
+main_menu --> select_product;
+select_product --> add_to_cart;
+add_to_cart --> check_cart;
+check_cart --> checkout;
+checkout --> payment_method;
+payment_method --> cash_payment;
+cash_payment --> payment_processing;
+payment_processing --> payment_result;
+payment_result --> order_confirmation;
+order_confirmation --> send_email;
+send_email --> end_success;
+start --> auth;
+auth --> login_form;
+login_form --> main_menu;
+main_menu --> select_product;
+select_product --> add_to_cart;
+add_to_cart --> check_cart;
+check_cart --> checkout;
+checkout --> payment_method;
+payment_method --> card_payment;
+card_payment --> payment_processing;
+payment_processing --> payment_result;
+payment_result --> order_confirmation;
+order_confirmation --> send_email;
+send_email --> end_success;
+start --> auth;
+auth --> login_form;
+login_form --> main_menu;
+main_menu --> select_product;
+select_product --> add_to_cart;
+add_to_cart --> check_cart;
+check_cart --> checkout;
+checkout --> payment_method;
+payment_method --> cash_payment;
+cash_payment --> payment_processing;
+payment_processing --> payment_result;
+payment_result --> order_confirmation;
+order_confirmation --> send_email;
+send_email --> end_success;
+
+            </pre>
+        </div>
+        <div class="footer">
+            Сгенерировано Graph Constructor | Mermaid.js
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+    });
+    </script>
+</body>
+</html>
