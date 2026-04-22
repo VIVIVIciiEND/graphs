@@ -80,12 +80,39 @@ impl eframe::App for GraphConstructor {
                         ui.set_min_height(200.0);
                         ui.horizontal(|ui| {
                             ui.label("Начальный узел:");
-                            ui.add(egui::TextEdit::singleline(&mut self.start_node).hint_text(""));
+                            if let Some(graph) =&self.graph {
+                                egui::ComboBox::from_id_source("начальный узел")
+                                .selected_text(
+                                    if self.start_node.is_empty(){
+                                        "выберите узел"
+                                    }else {
+                                        &self.start_node
+                                    }
+                                ).show_ui(ui, |ui|{
+                                    for i in &graph.nodes{
+                                        ui.selectable_value(&mut self.start_node, i.id.clone(), format!("{} ({})" , i.name , i.id));
+                                    }
+                                });
+                            }
                         });
                         ui.add_space(5.0);
                         ui.horizontal(|ui| {
                             ui.label("Конечный узел:");
-                            ui.add(egui::TextEdit::singleline(&mut self.end_node).hint_text(""));
+                            if let Some(graph) =&self.graph {
+                                egui::ComboBox::from_id_source("конечный узел")
+                                .selected_text(
+                                    if self.end_node.is_empty(){
+                                        "выберите узел"
+                                    }else {
+                                        &self.end_node
+                                    }
+                                ).show_ui(ui, |ui|{
+                                    for i in &graph.nodes{
+                                        ui.selectable_value(&mut self.end_node, i.id.clone(), format!("{} ({})" , i.name , i.id));
+                                    }
+                                });
+                            }
+                            
                         });
                         ui.add_space(5.0);
                         if ui

@@ -4,32 +4,21 @@ pub fn open_schedule(mmd_path: &str) {
     let mmd = fs::read_to_string(mmd_path).expect("файла нет!");
     let html = format!(
         r#"<!DOCTYPE html>
-<html lang="ru-Ru">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Граф</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Визуализация графа</h1>
-            <p>Интерактивная схема связей между узлами</p>
-        </div>
-        <div class="graph-container">
-            <pre class="mermaid">
-{}
-            </pre>
-        </div>
-        <div class="footer">
-            Сгенерировано Graph Constructor | Mermaid.js
-        </div>
-    </div>
+    <h1>Граф</h1>
+
+    <pre class="mermaid">{mmd1}</pre>
+
     <script>
         mermaid.initialize({{
-            startOnLoad: true,
-    }});
+            startOnLoad: true
+        }});
     </script>
 </body>
 </html>"#,

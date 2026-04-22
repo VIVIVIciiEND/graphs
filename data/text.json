@@ -1,0 +1,47 @@
+{
+"nodes": [
+    {"id":"start","name":"Start","node_type":"Действие"},
+    {"id":"a","name":"A Action","node_type":"Действие"},
+    {"id":"b","name":"B Branch","node_type":"Ветвление"},
+    {"id":"c","name":"C Action","node_type":"Действие"},
+    {"id":"d","name":"D Action","node_type":"Действие"},
+    {"id":"e","name":"E Branch","node_type":"Ветвление"},
+    {"id":"f","name":"F Action","node_type":"Действие"},
+    {"id":"g","name":"G Action","node_type":"Действие"},
+    {"id":"h","name":"H Branch","node_type":"Ветвление"},
+    {"id":"i","name":"I Action","node_type":"Действие"},
+    {"id":"j","name":"J Loop Node","node_type":"Действие"},
+    {"id":"k","name":"K Loop Node","node_type":"Действие"},
+    {"id":"l","name":"L Dead Node","node_type":"Действие"},
+    {"id":"m","name":"M Dead Node","node_type":"Ветвление"},
+    {"id":"n","name":"N SCC1","node_type":"Действие"},
+    {"id":"o","name":"O SCC2","node_type":"Действие"},
+    {"id":"p","name":"P SCC3","node_type":"Действие"},
+    {"id":"end1","name":"End Success","node_type":"Конец"},
+    {"id":"end2","name":"End Fail","node_type":"Конец"}
+],
+"edges": [
+    {"from":"start","to":"a"},
+    {"from":"a","to":"b"},
+    {"from":"b","to":"c"},
+    {"from":"b","to":"d"},
+
+    {"from":"c","to":"e"},
+    {"from":"d","to":"e"},
+    {"from":"e","to":"f"},
+    {"from":"e","to":"g"},
+    {"from":"f","to":"h"},
+    {"from":"g","to":"h"},
+    {"from":"h","to":"i"},
+    {"from":"i","to":"end1"},
+    {"from":"i","to":"end2"},
+    {"from":"j","to":"k"},
+    {"from":"k","to":"j"},
+    {"from":"g","to":"j"},
+    {"from":"n","to":"o"},
+    {"from":"o","to":"p"},
+    {"from":"p","to":"n"},
+    {"from":"p","to":"end1"},
+    {"from":"m","to":"l"}
+]
+}
